@@ -7,7 +7,7 @@ const client = new Client({
 });
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; // Use PORT from environment or default to 3000
 
 app.get('/', (req, res) => {
   res.send('YaY Your Bot Status Changed✨');
@@ -18,9 +18,9 @@ app.listen(port, () => {
   console.log(`🔗 Powered By Nittar`);
 });
 
-const statusMessages = [process.env.status1, process.env.status2];
+const statusMessages = [process.env.STATUS_1, process.env.STATUS_2]; // Update environment variable names to be more descriptive
 let currentIndex = 0;
-const channelId = process.env.channelId; // Provide the channel ID here
+const channelId = process.env.CHANNEL_ID; // Provide the channel ID here
 
 async function login() {
   try {
@@ -34,13 +34,14 @@ async function login() {
 
 function updateStatusAndSendMessages() {
   const currentStatus = statusMessages[currentIndex];
-  const nextStatus = statusMessages[(currentIndex + 1) % statusMessages.length];
 
+  // Update the bot's presence
   client.user.setPresence({
     activities: [{ name: currentStatus, type: 'CUSTOM_STATUS' }],
     status: 'dnd',
   });
 
+  // Find the text channel and send the status message
   const textChannel = client.channels.cache.get(channelId);
 
   if (textChannel instanceof TextChannel) {
@@ -58,9 +59,8 @@ client.once('ready', () => {
   console.log(`\x1b[36m%s\x1b[0m`, `|    ❤️WELCOME TO 2024`);
   updateStatusAndSendMessages();
 
-  setInterval(() => {
-    updateStatusAndSendMessages();
-  }, 10000);
+  // Schedule status updates every 10 seconds
+  setInterval(updateStatusAndSendMessages, 10000);
 });
 
 login();
