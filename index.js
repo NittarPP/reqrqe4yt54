@@ -37,7 +37,7 @@ function updateStatusAndSendMessages() {
 
   // Update the bot's presence
   client.user.setPresence({
-    activities: [{ name: currentStatus, type: 'CUSTOM_STATUS' }],
+    activities: [{ name: currentStatus, type: ActivityType.CUSTOM_STATUS }],
     status: 'dnd',
   });
 
@@ -45,9 +45,9 @@ function updateStatusAndSendMessages() {
   const textChannel = client.channels.cache.get(channelId);
 
   if (textChannel instanceof TextChannel) {
-    textChannel.send(`Bot status is: ${currentStatus}`).catch(console.error);
+    textChannel.send(`Bot status is: ${currentStatus}`).catch(console.log);
   } else {
-    console.error(`Channel with ID ${channelId} not found or not a text channel.`);
+    console.log(`Channel with ID ${channelId} not found or not a text channel.`);
   }
 
   currentIndex = (currentIndex + 1) % statusMessages.length;
