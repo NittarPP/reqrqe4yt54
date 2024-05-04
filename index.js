@@ -1,26 +1,29 @@
 const { Client, GatewayIntentBits, ActivityType, TextChannel } = require('discord.js');
 require('dotenv').config();
 const express = require('express');
-
+const fs = require('fs');
+const path = require('path');
 const client = new Client({
-  intents: Object.values(GatewayIntentBits)
+  intents: Object.keys(GatewayIntentBits).map((a) => {
+    return GatewayIntentBits[a];
+  }),
 });
-
 const app = express();
-const port = process.env.PORT || 3000; // Use PORT from environment or default to 3000
-
+const port = 3000;
 app.get('/', (req, res) => {
   res.send('YaY Your Bot Status Changed✨');
 });
-
 app.listen(port, () => {
-  console.log(`🔗 Listening to Nittar: http://localhost:${port}`);
-  console.log(`🔗 Powered By Nittar`);
+  console.log(`🔗 Listening to RTX: http://localhost:${port}`);
+  console.log(`🔗 Powered By RTX`);
 });
 
-const statusMessages = [process.env.STATUS_1, process.env.STATUS_2]; // Update environment variable names to be more descriptive
+
+const statusMessages = ["Check Information","Waiting for information","Watch Server"];
+
+
 let currentIndex = 0;
-const channelId = process.env.CHANNEL_ID; // Provide the channel ID here
+const channelId = '';
 
 async function login() {
   try {
@@ -34,20 +37,21 @@ async function login() {
 
 function updateStatusAndSendMessages() {
   const currentStatus = statusMessages[currentIndex];
+  const nextStatus = statusMessages[(currentIndex + 1) % statusMessages.length];
 
-  // Update the bot's presence
   client.user.setPresence({
-    activities: [{ name: currentStatus, type: ActivityType.CUSTOM_STATUS }],
+    activities: [{ name: currentStatus, type: ActivityType.Custom}],
     status: 'dnd',
   });
 
-  // Find the text channel and send the status message
+  
   const textChannel = client.channels.cache.get(channelId);
 
   if (textChannel instanceof TextChannel) {
-    textChannel.send(`Bot status is: ${currentStatus}`).catch(console.log);
+   
+    textChannel.send(`Bot status is: ${currentStatus}`);
   } else {
-    console.log(`Channel with ID ${channelId} not found or not a text channel.`);
+
   }
 
   currentIndex = (currentIndex + 1) % statusMessages.length;
@@ -59,8 +63,9 @@ client.once('ready', () => {
   console.log(`\x1b[36m%s\x1b[0m`, `|    ❤️WELCOME TO 2024`);
   updateStatusAndSendMessages();
 
-  // Schedule status updates every 10 seconds
-  setInterval(updateStatusAndSendMessages, 10000);
+  setInterval(() => {
+    updateStatusAndSendMessages();
+  }, 10000);
 });
 
 login();
